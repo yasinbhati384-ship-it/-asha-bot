@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050907">
+  <title>Asha Bot — Trading Signal Dashboard</title>
+  <style>
+    :root{--bg:#050907;--panel:#0b120f;--panel2:#101914;--line:#1e3b2c;--green:#00f58a;--green2:#08bd6b;--red:#ff3860;--yellow:#ffd83d;--text:#ecfff4;--muted:#90a79a}
+    *{box-sizing:border-box} html{min-height:100%;background:var(--bg)} body{margin:0;color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(ellipse at 75% 10%,#0b2518 0,transparent 33%),linear-gradient(160deg,#050907,#090e0b 65%,#030604);min-height:100vh}
+    button,input,select{font:inherit} button{cursor:pointer}
+    .shell{max-width:1220px;margin:0 auto;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #1d3529;background:rgba(8,14,10,.88);border-radius:16px;padding:14px 18px;box-shadow:0 0 28px #00ef7a0c}
+    .brand{display:flex;align-items:center;gap:12px}.logo{height:44px;width:44px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#00f58a,#087b4c);color:#001e11;font-weight:1000;font-size:24px;box-shadow:0 0 22px #00f58a44}
+    h1{font-size:20px;margin:0;letter-spacing:.3px}.sub{font-size:12px;color:var(--muted);margin-top:3px}.status{display:flex;align-items:center;gap:8px;border:1px solid #244a35;border-radius:999px;padding:8px 11px;color:#b9ffd7;font-size:12px;white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:#ffcc3f;box-shadow:0 0 9px #ffcc3f}
+    .notice{margin:14px 0;padding:11px 14px;border:1px solid #5a4a19;border-radius:12px;background:#211b0b;color:#ffe9a2;font-size:12px;line-height:1.5}
+    .layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr);gap:16px;margin-top:16px}.panel{background:linear-gradient(160deg,rgba(14,23,17,.96),rgba(6,11,8,.98));border:1px solid #1a3527;border-radius:17px;overflow:hidden;box-shadow:0 10px 35px #0006}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 18px;border-bottom:1px solid #193024}.panel-head h2{font-size:15px;margin:0}.tag{border:1px solid #225039;color:#85ffba;background:#0c2116;padding:5px 8px;border-radius:7px;font-size:10px;letter-spacing:.6px;font-weight:800}
+    .chart-area{padding:18px}.chart-box{position:relative;min-height:300px;border:1px solid #17271d;border-radius:12px;overflow:hidden;background-color:#070b08;background-image:linear-gradient(#1a2b20 1px,transparent 1px),linear-gradient(90deg,#1a2b20 1px,transparent 1px);background-size:50px 48px}.chart-caption{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 2px 0;color:var(--muted);font-size:11px}.candle-wrap{position:absolute;inset:18px 18px 40px;display:flex;align-items:stretch;justify-content:space-around;gap:6px}.candle{height:100%;width:9%;position:relative;min-width:14px}.wick{position:absolute;left:50%;transform:translateX(-50%);width:2px;background:var(--c);height:var(--wh);top:var(--wt);opacity:.9}.body{position:absolute;left:10%;width:80%;top:var(--bt);height:var(--bh);min-height:4px;background:var(--c);border-radius:1px;box-shadow:0 0 12px color-mix(in srgb,var(--c),transparent 65%)}.chart-labels{position:absolute;bottom:12px;left:14px;right:14px;display:flex;justify-content:space-between;color:#5b7463;font-size:10px}.mock-pill{position:absolute;top:12px;left:12px;background:#111d15;border:1px solid #254431;border-radius:8px;padding:7px 9px;color:#e7fff0;font-size:11px}
+    .controls{padding:18px;display:grid;gap:14px}.field label{display:block;font-size:12px;color:#9cb5a4;margin-bottom:7px}.field select,.field input{width:100%;color:var(--text);background:#080e0a;border:1px solid #294635;border-radius:10px;padding:12px;outline:none}.field select:focus,.field input:focus{border-color:var(--green);box-shadow:0 0 0 3px #00f58a14}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.candle-inputs{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.candle-btn{padding:13px 3px;border-radius:9px;border:1px solid #355040;background:#101a13;color:#b4c6bb;font-size:12px;font-weight:800}.candle-btn.green{border-color:#00be70;background:#073720;color:#8dffc1;box-shadow:inset 0 0 13px #00b85c20}.candle-btn.red{border-color:#dd3155;background:#3b101a;color:#ff9eb0;box-shadow:inset 0 0 13px #ff386020}.candle-btn small{display:block;font-size:10px;font-weight:500;margin-bottom:3px;opacity:.8}.hint{font-size:11px;color:#7f9787;line-height:1.45;margin-top:7px}
+    .signal{margin:0 18px 18px;border:1px solid #214b32;border-radius:14px;padding:17px;background:radial-gradient(ellipse at center,#0d2818,#07100a 75%);text-align:center}.signal-label{font-size:10px;letter-spacing:2px;color:#8aab97;font-weight:800}.signal-word{font-size:34px;font-weight:1000;letter-spacing:1px;margin:7px 0 2px;color:#9fb6a6}.signal-word.up{color:var(--green);text-shadow:0 0 18px #00f58a4a}.signal-word.down{color:var(--red);text-shadow:0 0 18px #ff38604a}.signal-word.wait{color:var(--yellow)}.signal-detail{font-size:12px;color:#9ab0a0}.meter{height:6px;background:#17271d;border-radius:20px;margin:14px 0 7px;overflow:hidden}.meter-fill{height:100%;width:0;background:var(--green);border-radius:20px;transition:width .25s}.action{display:block;width:100%;border:0;border-radius:10px;padding:14px 12px;color:#00170b;background:linear-gradient(90deg,#00f58a,#b2ffd1);font-weight:950;letter-spacing:.5px;box-shadow:0 0 22px #00f58a20}.action:hover{filter:brightness(1.06)}.reset{width:100%;margin-top:8px;background:transparent;border:1px solid #294635;color:#9ab0a0;border-radius:10px;padding:10px;font-size:12px}
+    .how{padding:16px 18px 18px;border-top:1px solid #193024}.how h3{margin:0 0 9px;font-size:13px}.how p{margin:6px 0;color:#91a899;font-size:11px;line-height:1.55}.footer{text-align:center;padding:18px 4px 4px;color:#6e8777;font-size:11px;line-height:1.6}.footer strong{color:#b8cdbf}
+    @media(max-width:780px){.shell{padding:10px}.layout{grid-template-columns:1fr}.chart-box{min-height:245px}header{padding:12px}.status{font-size:10px}.brand .sub{max-width:190px}.two{gap:8px}}
+    @media(max-width:380px){.two{grid-template-columns:1fr}.candle-inputs{gap:4px}.candle-btn{font-size:10px}h1{font-size:17px}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="brand"><div class="logo">A</div><div><h1>ASHA BOT</h1><div class="sub">Trading Signal Dashboard · Browser Edition</div></div></div>
+    <div class="status"><span class="dot"></span><span>MANUAL CHART MODE</span></div>
+  </header>
+  <div class="notice"><strong>Important:</strong> This website is not connected to Olymptrade and does not receive live prices. Enter the last five candle directions you see on your chart. Signals are a simple educational rule, not guaranteed predictions. Never enter your account password or API keys here.</div>
+  <main class="layout">
+    <section class="panel">
+      <div class="panel-head"><h2>Chart Workspace</h2><span class="tag">SAMPLE VIEW</span></div>
+      <div class="chart-area">
+        <div class="chart-box" aria-label="Illustrative candle chart">
+          <div class="mock-pill" id="chartAsset">Crypto Composite Index</div>
+          <div class="candle-wrap" id="chartCandles"></div>
+          <div class="chart-labels"><span>OLDER</span><span>RECENT</span><span>NOW</span></div>
+        </div>
+        <div class="chart-caption"><span>Illustration only · not live market data</span><span id="timeframeCaption">1 minute</span></div>
+      </div>
+      <div class="how"><h3>How to use Asha Bot</h3><p>1. Open your trading chart in another tab and choose the same asset.</p><p>2. Set the five buttons on the right to match the five most recent <strong>closed</strong> candles: green = up, red = down.</p><p>3. Press GET SIGNAL. If the pattern is mixed, the bot may return WAIT instead of forcing a trade.</p></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><h2>Signal Setup</h2><span class="tag">RULE-BASED</span></div>
+      <div class="controls">
+        <div class="field"><label for="asset">ASSET</label><select id="asset"><option>Crypto Composite Index</option><option>Silver OTC</option><option>Bitcoin (OTC)</option><option>Dogecoin (OTC)</option><option>Ethereum (OTC)</option><option>Litecoin (OTC)</option><option>Ripple (OTC)</option><option>Solana (OTC)</option><option>AUD/CAD (OTC)</option><option>CAD/CHF (OTC)</option><option>CAD/JPY (OTC)</option><option>EUR/AUD (OTC)</option></select></div>
+        <div class="two">
+          <div class="field"><label for="duration">CANDLE TIMEFRAME</label><select id="duration"><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option></select></div>
+          <div class="field"><label for="amount">TRADE AMOUNT (optional)</label><input id="amount" type="number" min="0" placeholder="e.g. 100" inputmode="decimal"></div>
+        </div>
+        <div class="field"><label>LAST 5 CLOSED CANDLES · OLDEST → NEWEST</label><div class="candle-inputs" id="candleInputs"></div><div class="hint">Tap each candle to switch between GREEN (up) and RED (down). Update these manually from your chart.</div></div>
+        <button class="action" id="getSignal">GET SIGNAL</button>
+      </div>
+      <div class="signal" aria-live="polite">
+        <div class="signal-label">ASHA BOT RESULT</div>
+        <div class="signal-word wait" id="signalWord">WAIT</div>
+        <div class="signal-detail" id="signalDetail">Enter the five candles, then get a signal.</div>
+        <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
+        <div class="signal-detail" id="confidence">No analysis yet</div>
+      </div>
+      <div class="how"><h3>Signal logic</h3><p>The tool weights recent candle directions more heavily. Strong agreement may show UP or DOWN; mixed patterns show WAIT. It does not calculate real probabilities or know the next candle.</p></div>
+    </section>
+  </main>
+  <div class="footer"><strong>Asha Bot</strong> · Independent educational tool, not affiliated with Olymptrade.<br>Signals can be wrong, especially on OTC / fixed-time products. This page places no trades and stores no account details.</div>
+</div>
+<script>
+(() => {
+  const directions = [1, 1, -1, 1, -1];
+  const names = ['Candle 1','Candle 2','Candle 3','Candle 4','Candle 5'];
+  const candleInputs = document.getElementById('candleInputs');
+  const chartCandles = document.getElementById('chartCandles');
+  const asset = document.getElementById('asset');
+  const duration = document.getElementById('duration');
+  const signalWord = document.getElementById('signalWord');
+  const signalDetail = document.getElementById('signalDetail');
+  const confidence = document.getElementById('confidence');
+  const meterFill = document.getElementById('meterFill');
+  const palette = {up:'#00d978', down:'#ff4166'};
+
+  function drawInputs(){
+    candleInputs.innerHTML='';
+    directions.forEach((direction,i)=>{
+      const b=document.createElement('button');
+      b.type='button';b.className='candle-btn '+(direction===1?'green':'red');
+      b.setAttribute('aria-label',names[i]+(direction===1?' green/up':' red/down'));
+      b.innerHTML='<small>'+(i+1)+'</small>'+(direction===1?'GREEN':'RED');
+      b.addEventListener('click',()=>{directions[i]*=-1;drawInputs();drawChart();});
+      candleInputs.appendChild(b);
+    });
+  }
+  function drawChart(){
+    document.getElementById('chartAsset').textContent=asset.value;
+    document.getElementById('timeframeCaption').textContent=duration.value+' minute'+(duration.value==='1'?'':'s');
+    chartCandles.innerHTML='';
+    // Decorative illustration only; the bars reflect the manually selected directions, not prices.
+    let level=52;
+    directions.forEach((dir,i)=>{
+      const el=document.createElement('div');el.className='candle';
+      const bodyHeight=18+((i*13+27)%30); const wickHeight=bodyHeight+28+((i*11)%27);
+      const top=Math.max(3,Math.min(79,level-(dir===1?bodyHeight:0)));
+      const wickTop=Math.max(0,top-((wickHeight-bodyHeight)/2));
+      el.style.setProperty('--c',dir===1?palette.up:palette.down);
+      el.style.setProperty('--wh',wickHeight+'%');el.style.setProperty('--wt',wickTop+'%');
+      el.style.setProperty('--bt',top+'%');el.style.setProperty('--bh',bodyHeight+'%');
+      el.innerHTML='<div class="wick"></div><div class="body"></div>';chartCandles.appendChild(el);
+      level+=dir===1?-5:5; if(level<20)level=65;if(level>75)level=40;
+    });
+  }
+  function resetResult(){signalWord.textContent='WAIT';signalWord.className='signal-word wait';signalDetail.textContent='Candles updated. Press GET SIGNAL to analyze.';confidence.textContent='No analysis yet';meterFill.style.width='0%';meterFill.style.background='var(--yellow)';}
+  function analyze(){
+    // Transparent illustrative rule: newer candles carry larger weights 1..5.
+    const score=directions.reduce((sum,d,i)=>sum+d*(i+1),0);
+    const agrees=directions.slice(-3).filter(d=>d===Math.sign(score)).length;
+    const strength=Math.round(Math.min(95,Math.abs(score)/15*100));
+    let result='WAIT',detail='Mixed candle pattern — no clear direction.';
+    if(score>=8 && directions[4]===1 && agrees>=2){result='UP';detail='Recent candle pattern leans upward.';}
+    else if(score<=-8 && directions[4]===-1 && agrees>=2){result='DOWN';detail='Recent candle pattern leans downward.';}
+    signalWord.textContent=result;signalWord.className='signal-word '+(result==='UP'?'up':result==='DOWN'?'down':'wait');
+    signalDetail.textContent=detail+' '+asset.value+' · '+duration.value+'m timeframe.';
+    const visualStrength=Math.max(10,Math.min(100,strength));meterFill.style.width=visualStrength+'%';
+    meterFill.style.background=result==='UP'?'var(--green)':result==='DOWN'?'var(--red)':'var(--yellow)';
+    confidence.textContent='Pattern score: '+(score>0?'+':'')+score+' / 15 · visual strength '+strength+'% (not win probability)';
+  }
+  asset.addEventListener('change',()=>{drawChart();resetResult();});duration.addEventListener('change',()=>{drawChart();resetResult();});
+  document.getElementById('getSignal').addEventListener('click',analyze);
+  drawInputs();drawChart();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050907">
+<title>Asha Bot — Live Crypto Candle Assistant</title>
+<style>
+:root{--bg:#050907;--panel:#0b120f;--line:#214532;--green:#00f58a;--red:#ff4166;--yellow:#ffd83d;--text:#ecfff4;--muted:#9ab0a0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% 0,#0b2818 0,transparent 38%),#050907;color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.shell{max-width:950px;margin:auto;padding:14px}header,.panel{border:1px solid var(--line);background:linear-gradient(155deg,#0d1911,#070c09);border-radius:16px}header{padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:11px}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--green),#087b4c);color:#001b0e;display:grid;place-items:center;font-weight:1000;font-size:24px}h1{font-size:20px;margin:0}.sub{font-size:12px;color:var(--muted)}.pill{font-size:11px;padding:7px 10px;border:1px solid #28583d;border-radius:999px;color:#b9ffd7;white-space:nowrap}.notice{margin:12px 0;padding:12px;border:1px solid #5a4a19;border-radius:12px;background:#211b0b;color:#ffe9a2;font-size:12px;line-height:1.5}.layout{display:grid;grid-template-columns:1fr 1fr;gap:12px}.panel{overflow:hidden;margin-bottom:12px}.head{padding:15px 16px;border-bottom:1px solid #193024;display:flex;align-items:center;justify-content:space-between;gap:10px}.head h2{font-size:15px;margin:0}.content{padding:16px}.field{margin-bottom:13px}.field label{display:block;color:#9cb5a4;font-size:12px;margin-bottom:6px}.field select,.field input{width:100%;background:#080e0a;color:var(--text);border:1px solid #294635;border-radius:10px;padding:12px;font:inherit}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:10px;padding:13px;font:inherit;font-weight:800;cursor:pointer}.primary{width:100%;background:linear-gradient(90deg,#00f58a,#b2ffd1);color:#00170b}.secondary{background:#101a13;border:1px solid #294635;color:var(--text)}.candles{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.candle{border-radius:9px;padding:12px 2px;text-align:center;font-weight:800;font-size:12px;border:1px solid}.candle small{display:block;font-weight:500;margin-bottom:4px}.green{background:#073720;border-color:#00be70;color:#8dffc1}.red{background:#3b101a;border-color:#dd3155;color:#ff9eb0}.hint{color:var(--muted);font-size:12px;line-height:1.5;margin:8px 0}.result{text-align:center;background:radial-gradient(ellipse at center,#0d2818,#07100a 75%);border:1px solid #214b32;border-radius:14px;padding:18px}.result-word{font-size:38px;font-weight:1000;letter-spacing:1px;margin:5px}.up{color:var(--green)}.down{color:var(--red)}.wait{color:var(--yellow)}.meter{height:7px;background:#17271d;border-radius:20px;overflow:hidden;margin:14px 0 8px}.fill{height:100%;width:0;background:var(--yellow)}.stat{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #193024;font-size:13px}.stat:last-child{border-bottom:0}.muted{color:var(--muted)}.footer{text-align:center;color:#6e8777;font-size:11px;line-height:1.6;padding:10px}.hidden{display:none!important}@media(max-width:680px){.layout{grid-template-columns:1fr}.shell{padding:10px}header{padding:12px}.sub{max-width:220px}.pill{font-size:10px}.row{gap:8px}}
+</style>
+</head>
+<body><div class="shell">
+<header><div class="brand"><div class="logo">A</div><div><h1>ASHA BOT</h1><div class="sub">Live Crypto Candles · Educational Signal Assistant</div></div></div><div class="pill" id="connection">NOT CONNECTED</div></header>
+<div class="notice"><b>Important:</b> Live mode uses public Binance spot-market data for supported crypto pairs only. It does not connect to Olymptrade and cannot read its private/OTC chart. Crypto Composite Index and OTC assets require manual candle entry. Signals are indicators, not guaranteed predictions or win probabilities.</div>
+<div class="layout">
+<section class="panel"><div class="head"><h2>Market & Live Data</h2><span class="pill">PUBLIC FEED</span></div><div class="content">
+<div class="field"><label for="asset">ASSET</label><select id="asset"><option value="BTCUSDT">Bitcoin (BTC/USDT) — live</option><option value="ETHUSDT">Ethereum (ETH/USDT) — live</option><option value="SOLUSDT">Solana (SOL/USDT) — live</option><option value="BNBUSDT">BNB (BNB/USDT) — live</option><option value="XRPUSDT">XRP (XRP/USDT) — live</option><option value="DOGEUSDT">Dogecoin (DOGE/USDT) — live</option><option value="LTCUSDT">Litecoin (LTC/USDT) — live</option><option value="MANUAL">Other / OTC / Crypto Composite Index — manual</option></select></div>
+<div class="row"><div class="field"><label for="tf">CANDLE TIMEFRAME</label><select id="tf"><option value="1m">1 minute</option><option value="5m">5 minutes</option><option value="15m">15 minutes</option></select></div><div class="field"><label>LAST PRICE (USDT)</label><input id="price" readonly placeholder="Waiting for feed"></div></div>
+<button class="btn primary" id="refresh">REFRESH LIVE DATA</button><div class="hint" id="feedMsg">Choose a supported pair to load closed candles. Refreshes about every 15 seconds.</div>
+<div class="stat"><span class="muted">EMA trend (9 / 21)</span><b id="ema">—</b></div><div class="stat"><span class="muted">RSI (14)</span><b id="rsi">—</b></div><div class="stat"><span class="muted">MACD momentum</span><b id="macd">—</b></div><div class="stat"><span class="muted">Last candle close (UTC)</span><b id="lastTime">—</b></div>
+</div></section>
+<section class="panel"><div class="head"><h2>Signal Analysis</h2><span class="pill">RULE-BASED</span></div><div class="content">
+<div class="field"><label>LAST 5 CLOSED CANDLES · OLDEST → NEWEST</label><div class="candles" id="candles"></div><div class="hint" id="candleHint">Live mode fills these from market data. In manual mode, tap each candle to change its direction.</div></div>
+<div class="result" aria-live="polite"><div class="muted" style="font-size:11px;letter-spacing:2px;font-weight:800">ASHA BOT RESULT</div><div class="result-word wait" id="signal">WAIT</div><div id="detail" class="muted">Waiting for data.</div><div class="meter"><div class="fill" id="fill"></div></div><div class="muted" id="strength">No analysis yet</div></div>
+<button class="btn secondary" id="analyze" style="width:100%;margin-top:10px">ANALYZE AGAIN</button>
+<div class="hint">UP/DOWN appears only when multiple indicators agree; otherwise WAIT. Indicator alignment is not a probability of winning.</div>
+</div></section>
+</div>
+<div class="panel"><div class="head"><h2>How this version works</h2></div><div class="content"><div class="hint">• Supported crypto pairs: fetches public 1m/5m/15m candles and updates automatically.<br>• Signal logic combines EMA 9/21 trend, RSI 14, MACD momentum, and recent closed-candle direction.<br>• OTC / Crypto Composite Index: no public feed is assumed; use manual candle mode.<br>• This page never places trades and never asks for your trading password or API key.</div></div></div>
+<div class="footer"><b>Asha Bot</b> · Independent educational tool, not affiliated with Olymptrade or Binance. Market data may be delayed or unavailable. Signals can be wrong; do not use this as the sole basis for a trade.</div>
+</div>
+<script>
+(()=> {
+const $=id=>document.getElementById(id);
+const asset=$('asset'), tf=$('tf');
+let manual=[1,1,-1,1,-1], klines=[], timer=null, mode='manual';
+function renderCandles(dirs){
+ const wrap=$('candles');wrap.innerHTML='';
+ dirs.forEach((d,i)=>{const b=document.createElement('button');b.className='candle '+(d===1?'green':'red');b.innerHTML='<small>'+(i+1)+'</small>'+(d===1?'GREEN':'RED');b.type='button';b.disabled=mode==='live';if(mode!=='live')b.addEventListener('click',()=>{manual[i]*=-1;renderCandles(manual);analyzeManual()});wrap.appendChild(b)});
+}
+function setResult(word,detail,scoreText,percent){
+ $('signal').textContent=word;$('signal').className='result-word '+(word==='UP'?'up':word==='DOWN'?'down':'wait');$('detail').textContent=detail;$('strength').textContent=scoreText;$('fill').style.width=Math.max(4,Math.min(100,percent))+'%';$('fill').style.background=word==='UP'?'var(--green)':word==='DOWN'?'var(--red)':'var(--yellow)';
+}
+function analyzeManual(){
+ const score=manual.reduce((s,d,i)=>s+d*(i+1),0);
+ const recent=manual.slice(-3), same=recent.filter(x=>x===Math.sign(score)).length;
+ let word='WAIT',detail='Mixed candle pattern — no clear direction.';
+ if(score>=8&&manual[4]===1&&same>=2){word='UP';detail='Recent manually entered candle pattern leans upward.'}
+ else if(score<=-8&&manual[4]===-1&&same>=2){word='DOWN';detail='Recent manually entered candle pattern leans downward.'}
+ setResult(word,detail,'Pattern score: '+(score>0?'+':'')+score+' / 15 · not a win probability',Math.abs(score)/15*100);
+}
+function ema(values,period){if(values.length<period)return null;const k=2/(period+1);let v=values.slice(0,period).reduce((a,b)=>a+b,0)/period;for(let i=period;i<values.length;i++)v=values[i]*k+v*(1-k);return v}
+function rsi(values,p=14){if(values.length<=p)return null;let gains=0,losses=0;for(let i=values.length-p;i<values.length;i++){const d=values[i]-values[i-1];if(d>0)gains+=d;else losses-=d}if(losses===0)return 100;return 100-100/(1+(gains/p)/(losses/p))}
+function analyzeLive(){
+ if(klines.length<30){setResult('WAIT','Not enough closed candles yet.','Need more data',0);return}
+ const closes=klines.map(k=>+k[4]), e9=ema(closes,9), e21=ema(closes,21), r=rsi(closes,14), macd=ema(closes,12)-ema(closes,26);
+ const recent=klines.slice(-5), dirs=recent.map(k=>+k[4]>=+k[1]?1:-1);
+ renderCandles(dirs);
+ const trend=e9>e21?1:e9<e21?-1:0, mom=macd>0?1:macd<0?-1:0;
+ const rsiVote=r>55?1:r<45?-1:0, candleVote=dirs.slice(-3).reduce((a,b)=>a+b,0)>0?1:dirs.slice(-3).reduce((a,b)=>a+b,0)<0?-1:0;
+ const votes=[trend,mom,rsiVote,candleVote].filter(v=>v!==0), up=votes.filter(v=>v===1).length, down=votes.filter(v=>v===-1).length;
+ let word='WAIT',detail='Indicators are mixed. Wait for clearer agreement.';
+ if(up>=3&&trend===1){word='UP';detail='EMA trend and most momentum/candle indicators lean upward.'}
+ else if(down>=3&&trend===-1){word='DOWN';detail='EMA trend and most momentum/candle indicators lean downward.'}
+ const agree=Math.round(Math.max(up,down)/4*100);
+ setResult(word,detail,'Indicator agreement: '+agree+'% · not a win probability',agree);
+ $('ema').textContent=e9>e21?'Bullish (9 > 21)':e9<e21?'Bearish (9 < 21)':'Neutral';
+ $('rsi').textContent=r.toFixed(1)+(r>70?' · overbought':r<30?' · oversold':'');
+ $('macd').textContent=macd>0?'Positive':macd<0?'Negative':'Flat';
+ $('lastTime').textContent=new Date(+klines[klines.length-1][6]).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',timeZone:'UTC'})+' UTC';
+}
+async function fetchLive(){
+ if(asset.value==='MANUAL'){mode='manual';$('connection').textContent='MANUAL MODE';$('price').value='';$('feedMsg').textContent='This asset has no public feed configured. Enter candle directions manually below.';$('candleHint').textContent='Tap each candle to change its direction.';renderCandles(manual);analyzeManual();['ema','rsi','macd','lastTime'].forEach(id=>$(id).textContent='—');return}
+ mode='live';$('connection').textContent='CONNECTING…';$('feedMsg').textContent='Loading public market candles…';
+ try{
+  const url='https://api.binance.com/api/v3/klines?symbol='+encodeURIComponent(asset.value)+'&interval='+encodeURIComponent(tf.value)+'&limit=100';
+  const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error('Market data request failed ('+response.status+').');
+  const data=await response.json();if(!Array.isArray(data)||data.length<30)throw new Error('Market feed returned too little data.');
+  const now=Date.now();klines=data.filter(k=>+k[6]<now);if(klines.length<30)throw new Error('Waiting for enough closed candles.');
+  $('price').value=(+data[data.length-1][4]).toLocaleString(undefined,{maximumFractionDigits:8});
+  $('connection').textContent='LIVE DATA';$('feedMsg').textContent='Public Binance spot data · updated '+new Date().toLocaleTimeString();
+  $('candleHint').textContent='Loaded automatically from public market data. These may differ from Olymptrade OTC/index candles.';
+  analyzeLive();
+ }catch(e){$('connection').textContent='FEED ERROR';$('feedMsg').textContent=e.message+' If unavailable, try again later or select manual mode.';setResult('WAIT','No live data received; no signal generated.','Feed unavailable',0)}
+}
+function restart(){if(timer)clearInterval(timer);fetchLive();if(asset.value!=='MANUAL')timer=setInterval(fetchLive,15000)}
+asset.addEventListener('change',restart);tf.addEventListener('change',restart);$('refresh').addEventListener('click',fetchLive);$('analyze').addEventListener('click',()=>mode==='live'?analyzeLive():analyzeManual());
+renderCandles(manual);restart();
+})();
+</script></body></html>
